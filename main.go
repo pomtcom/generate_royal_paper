@@ -29,11 +29,21 @@ func main() {
 	//}
 	//fmt.Println(cell)
 	fmt.Println("Generate print paper program is starting")
+
 	data_record, err := readRecord()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	writeOutput(data_record)
+	fmt.Println("Please any key to exit")
+	fmt.Scanln() // wait for Enter Key
+
+}
+
+func writeOutput(data_record []record){
+
 
 	f, err := excelize.OpenFile("./template/template_final.xlsx")
 	if err != nil {
@@ -78,7 +88,6 @@ func main() {
 		fmt.Println(err_savefile)
 	}
 	fmt.Println("save file is completed, the last row of record is ", index-1)
-
 }
 
 func readRecord() ([]record, error) {
