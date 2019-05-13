@@ -29,17 +29,64 @@ func main() {
 	//}
 	//fmt.Println(cell)
 	fmt.Println("Generate print paper program is starting")
-	readRecord()
+	data_record, err := readRecord()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
+	f, err := excelize.OpenFile("./template/template_final.xlsx")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	index := 1
+	for _, item := range data_record {
+		// index is the index where we are
+		// element is the element from someSlice for where we are
+		fmt.Println("Writing record of ", item.number)
+		for i := 1; i <= item.quantity; i++ {
+
+			branchNoIndex := "F" + strconv.Itoa(index+7)
+			f.SetCellValue("Sheet1", branchNoIndex, item.branchNo)
+
+			branchNameIndex := "H" + strconv.Itoa(index+7)
+			f.SetCellValue("Sheet1", branchNameIndex, item.branchName)
+
+			addressIndex := "E" + strconv.Itoa(index+9)
+			f.SetCellValue("Sheet1", addressIndex, item.address)
+
+			phoneNoIndex := "F" + strconv.Itoa(index+14)
+			f.SetCellValue("Sheet1", phoneNoIndex, item.phoneNo)
+
+			quantityIndexRunning := "J" + strconv.Itoa(index+16)
+			f.SetCellValue("Sheet1", quantityIndexRunning, i)
+
+			quantityIndexLast := "L" + strconv.Itoa(index+16)
+			f.SetCellValue("Sheet1", quantityIndexLast, item.quantity)
+			index = index + 21
+		}
+	}
+
+
+	// Set active sheet of the workbook.
+	//f.SetActiveSheet(index)
+	// Save xlsx file by the given path.
+	err_savefile := f.SaveAs("./output/output.xlsx")
+	if err_savefile != nil {
+		fmt.Println(err_savefile)
+	}
+	fmt.Println("save file is completed, the last row of record is ", index-1)
 
 }
 
-func readRecord(){
+func readRecord() ([]record, error) {
 	fmt.Println("read input from source")
 	f, err := excelize.OpenFile("./source_record/info.xlsx")
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil, err
 	}
 
 	// Get all the rows in the record sheet.
@@ -83,5 +130,6 @@ func readRecord(){
 		//fmt.Println()
 	}
 
-	fmt.Println("recordOfInfo is ", recordOfInfo)
+	//fmt.Println("recordOfInfo is ", recordOfInfo)
+	return recordOfInfo, nil
 }
